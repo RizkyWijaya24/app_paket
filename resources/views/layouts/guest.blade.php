@@ -55,11 +55,6 @@
 
         <style>
             body { font-family: 'Inter', sans-serif; }
-            .login-card {
-                background: rgba(17, 24, 39, 0.7);
-                backdrop-filter: blur(12px);
-                border: 1px solid rgba(224, 140, 30, 0.2);
-            }
             .btn-primary {
                 background: linear-gradient(135deg, #e08c1e 0%, #c56c14 100%);
                 transition: all 0.2s ease;
@@ -70,26 +65,25 @@
             }
         </style>
     </head>
-    <body class="h-full bg-gray-950 text-gray-100 flex items-center justify-center relative overflow-hidden antialiased">
+    <body class="h-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 text-gray-800 flex items-center justify-center relative overflow-hidden antialiased">
         
-        <!-- Background decorative glows -->
-        <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[35rem] h-[35rem] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-        <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[30rem] h-[30rem] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <!-- Light decorative glows for depth -->
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none"></div>
 
         <div class="min-h-screen w-full flex flex-col sm:justify-center items-center pt-6 sm:pt-0 z-10 px-4">
             <div class="mb-8 text-center">
                 <a href="/" class="flex flex-col items-center gap-3">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-primary-500/20 hover:scale-105 transition-transform duration-200">
+                    <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-3xl shadow-2xl hover:scale-105 transition-transform duration-200">
                         🌙
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-white tracking-tight">Tabungan Paket Lebaran</h2>
-                        <p class="text-primary-400 text-xs font-semibold tracking-wider uppercase mt-0.5">Back-Office Owner Portal</p>
+                        <h2 class="text-2xl font-bold text-white tracking-tight drop-shadow-sm">Tabungan Paket Lebaran</h2>
+                        <p class="text-amber-100 text-xs font-semibold tracking-wider uppercase mt-0.5 drop-shadow-sm">Back-Office Owner Portal</p>
                     </div>
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md login-card px-8 py-8 shadow-2xl rounded-2xl">
+            <div class="w-full sm:max-w-md bg-white border border-white/20 px-8 py-8 shadow-2xl shadow-orange-950/20 rounded-3xl">
                 {{ $slot }}
             </div>
         </div>
