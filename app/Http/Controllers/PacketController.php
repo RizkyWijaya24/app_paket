@@ -29,7 +29,7 @@ class PacketController extends Controller
 
         Packet::create($validated);
 
-        return redirect()->route('packets.index')
+        return redirect()->route('packets.create')
             ->with('success', 'Paket berhasil ditambahkan!');
     }
 
