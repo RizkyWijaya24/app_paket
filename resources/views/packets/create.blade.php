@@ -29,6 +29,7 @@
                                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                placeholder="150000">
                         @error('setoran_wajib') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-[10px] text-gray-400 mt-1">💡 Isi 0 jika nominal setoran bebas/uang</p>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Total Periode <span class="text-red-500">*</span></label>
@@ -38,6 +39,7 @@
                                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                placeholder="10">
                         @error('total_periode') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-[10px] text-gray-400 mt-1">💡 Isi 1 jika bertipe setoran bebas</p>
                     </div>
                 </div>
 

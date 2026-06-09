@@ -92,10 +92,10 @@
                         @foreach($customerPackets as $index => $cp)
                         @php
                             $totalSetoran  = $cp->savingsLedgers->sum('jumlah_setoran');
-                            $targetTotal   = $cp->packet->setoran_wajib * $cp->packet->total_periode * $cp->kuantitas;
-                            $sisaSetoran   = max(0, $targetTotal - $totalSetoran);
-                            $progressPct   = $targetTotal > 0 ? min(100, round(($totalSetoran / $targetTotal) * 100)) : 0;
-                            $isLunasReady  = $sisaSetoran == 0;
+                            $targetTotal   = $cp->is_bebas ? 0 : ($cp->packet->setoran_wajib * $cp->packet->total_periode * $cp->kuantitas);
+                            $sisaSetoran   = $cp->is_bebas ? 0 : max(0, $targetTotal - $totalSetoran);
+                            $progressPct   = ($targetTotal > 0) ? min(100, round(($totalSetoran / $targetTotal) * 100)) : 0;
+                            $isLunasReady  = !$cp->is_bebas && ($sisaSetoran == 0);
                         @endphp
                         <tr class="hover:bg-amber-50/30 transition-colors group {{ $isLunasReady ? 'bg-emerald-50/40' : '' }}"
                             data-setoran-wajib="{{ $cp->packet->setoran_wajib }}">
@@ -112,7 +112,7 @@
                             {{-- Paket --}}
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center gap-1 bg-primary-50 text-primary-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                                    📦 {{ $cp->packet->nama_paket }}
+                                    {{ $cp->is_bebas ? '💵' : '📦' }} {{ $cp->packet->nama_paket }}
                                     @if($cp->kuantitas > 1)
                                         <span class="bg-primary-200 text-primary-800 px-1.5 rounded-full">×{{ $cp->kuantitas }}</span>
                                     @endif
@@ -121,36 +121,48 @@
 
                             {{-- Progress --}}
                             <td class="px-6 py-4">
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1 bg-gray-100 rounded-full h-2 min-w-16">
-                                        <div class="h-2 rounded-full transition-all {{ $isLunasReady ? 'bg-emerald-500' : 'bg-primary-400' }}"
-                                             style="width: {{ $progressPct }}%"></div>
-                                    </div>
-                                    <span class="text-xs font-semibold {{ $isLunasReady ? 'text-emerald-600' : 'text-gray-600' }} w-10 text-right">
-                                        {{ $progressPct }}%
+                                @if($cp->is_bebas)
+                                    <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-full border border-amber-200">
+                                        💰 Bebas/Fleksibel
                                     </span>
-                                </div>
-                                @if($isLunasReady)
-                                    <span class="text-xs text-emerald-600 font-semibold">✅ Lunas</span>
                                 @else
-                                    <span class="text-xs text-gray-400">Sisa: Rp {{ number_format($sisaSetoran, 0, ',', '.') }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-gray-100 rounded-full h-2 min-w-16">
+                                            <div class="h-2 rounded-full transition-all {{ $isLunasReady ? 'bg-emerald-500' : 'bg-primary-400' }}"
+                                                 style="width: {{ $progressPct }}%"></div>
+                                        </div>
+                                        <span class="text-xs font-semibold {{ $isLunasReady ? 'text-emerald-600' : 'text-gray-600' }} w-10 text-right">
+                                            {{ $progressPct }}%
+                                        </span>
+                                    </div>
+                                    @if($isLunasReady)
+                                        <span class="text-xs text-emerald-600 font-semibold">✅ Lunas</span>
+                                    @else
+                                        <span class="text-xs text-gray-400">Sisa: Rp {{ number_format($sisaSetoran, 0, ',', '.') }}</span>
+                                    @endif
                                 @endif
                             </td>
 
                             {{-- Setoran Wajib --}}
                             <td class="px-6 py-4 text-right">
-                                <p class="text-sm font-semibold text-gray-900">
-                                    Rp {{ number_format($cp->packet->setoran_wajib, 0, ',', '.') }}
-                                </p>
-                                <p class="text-xs text-gray-400">per periode</p>
+                                @if($cp->is_bebas)
+                                    <span class="text-xs text-gray-500 font-medium italic">Bebas</span>
+                                @else
+                                    <p class="text-sm font-semibold text-gray-900">
+                                        Rp {{ number_format($cp->packet->setoran_wajib, 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-xs text-gray-400">per periode</p>
+                                @endif
                             </td>
 
                             {{-- Total Terkumpul --}}
                             <td class="px-6 py-4 text-right">
-                                <p class="text-sm font-semibold {{ $totalSetoran > 0 ? 'text-emerald-600' : 'text-gray-400' }}">
+                                <p class="text-sm font-semibold {{ $totalSetoran > 0 ? 'text-emerald-600' : 'text-gray-900' }}">
                                     Rp {{ number_format($totalSetoran, 0, ',', '.') }}
                                 </p>
-                                <p class="text-xs text-gray-400">dari Rp {{ number_format($targetTotal, 0, ',', '.') }}</p>
+                                @if(!$cp->is_bebas)
+                                    <p class="text-xs text-gray-400">dari Rp {{ number_format($targetTotal, 0, ',', '.') }}</p>
+                                @endif
                             </td>
 
                             {{-- INPUT JUMLAH SETORAN --}}
@@ -163,7 +175,7 @@
                                         id="setoran_{{ $cp->id }}"
                                         min="0"
                                         step="500"
-                                        placeholder="{{ $isLunasReady ? 'Sudah lunas' : number_format($cp->packet->setoran_wajib, 0, '.', '') }}"
+                                        placeholder="{{ $isLunasReady ? 'Sudah lunas' : ($cp->is_bebas ? 'Bebas...' : number_format($cp->packet->setoran_wajib, 0, '.', '')) }}"
                                         {{ $isLunasReady ? 'disabled' : '' }}
                                         class="setoran-input flex-1 border border-gray-200 rounded-r-xl px-3 py-2.5 text-sm text-right
                                                focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
@@ -297,7 +309,7 @@
     // ===== Isi semua dengan setoran wajib =====
     document.getElementById('fillAllBtn')?.addEventListener('click', function() {
         inputs.forEach(input => {
-            if (!input.disabled && !input.value) {
+            if (!input.disabled && !input.value && parseFloat(input.dataset.wajib) > 0) {
                 input.value = input.dataset.wajib;
                 highlightRow(input);
             }

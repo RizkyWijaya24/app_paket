@@ -23,7 +23,11 @@
                     {{ $customerPacket->packet->nama_paket }}
                 </h3>
                 <p class="text-xs text-gray-500 mt-1">
-                    Rp {{ number_format($customerPacket->packet->setoran_wajib, 0, ',', '.') }} × {{ $customerPacket->packet->total_periode }} Periode
+                    @if($customerPacket->is_bebas)
+                        Setoran Bebas/Fleksibel
+                    @else
+                        Rp {{ number_format($customerPacket->packet->setoran_wajib, 0, ',', '.') }} × {{ $customerPacket->packet->total_periode }} Periode
+                    @endif
                 </p>
             </div>
             <div class="mt-4 pt-3 border-t border-gray-50 flex justify-between items-center">
@@ -34,7 +38,7 @@
             </div>
         </div>
 
-        {{-- Card 2: Status & Progress --}}
+        {{-- Card 2: Status & Kemajuan --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between">
             <div>
                 <p class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Status & Kemajuan</p>
@@ -45,16 +49,22 @@
                         {{ $customerPacket->status === 'batal' ? 'bg-gray-100 text-gray-600' : '' }}">
                         {{ strtoupper($customerPacket->status) }}
                     </span>
-                    <span class="text-sm font-bold text-gray-700">
-                        {{ $customerPacket->progress_persen }}%
-                    </span>
+                    @if(!$customerPacket->is_bebas)
+                        <span class="text-sm font-bold text-gray-700">
+                            {{ $customerPacket->progress_persen }}%
+                        </span>
+                    @endif
                 </div>
             </div>
             <div class="mt-4">
-                <div class="bg-gray-100 rounded-full h-2 w-full">
-                    <div class="h-2 rounded-full {{ $customerPacket->progress_persen >= 100 ? 'bg-emerald-500' : 'bg-primary-500' }}"
-                         style="width: {{ $customerPacket->progress_persen }}%"></div>
-                </div>
+                @if($customerPacket->is_bebas)
+                    <span class="text-xs text-gray-400 font-medium">💰 Tabungan Uang Bebas</span>
+                @else
+                    <div class="bg-gray-100 rounded-full h-2 w-full">
+                        <div class="h-2 rounded-full {{ $customerPacket->progress_persen >= 100 ? 'bg-emerald-500' : 'bg-primary-500' }}"
+                             style="width: {{ $customerPacket->progress_persen }}%"></div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -68,7 +78,9 @@
             </div>
             <div class="mt-4 pt-3 border-t border-gray-50 flex justify-between text-xs text-gray-500">
                 <span>Target:</span>
-                <span class="font-semibold text-gray-700">Rp {{ number_format($customerPacket->target_total, 0, ',', '.') }}</span>
+                <span class="font-semibold text-gray-700">
+                    {{ $customerPacket->is_bebas ? 'Fleksibel' : 'Rp ' . number_format($customerPacket->target_total, 0, ',', '.') }}
+                </span>
             </div>
         </div>
 
@@ -76,13 +88,15 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between">
             <div>
                 <p class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Sisa Kekurangan</p>
-                <h3 class="text-2xl font-bold text-rose-500 mt-1">
-                    Rp {{ number_format($customerPacket->sisa_setoran, 0, ',', '.') }}
+                <h3 class="text-2xl font-bold {{ $customerPacket->is_bebas ? 'text-gray-500' : 'text-rose-500' }} mt-1">
+                    {{ $customerPacket->is_bebas ? '—' : 'Rp ' . number_format($customerPacket->sisa_setoran, 0, ',', '.') }}
                 </h3>
             </div>
             <div class="mt-4 pt-3 border-t border-gray-50 flex justify-between text-xs text-gray-500">
                 <span>Periode Terbayar:</span>
-                <span class="font-semibold text-gray-700">{{ $customerPacket->periode_terbayar }} / {{ $customerPacket->packet->total_periode }}</span>
+                <span class="font-semibold text-gray-700">
+                    {{ $customerPacket->is_bebas ? 'Fleksibel' : $customerPacket->periode_terbayar . ' / ' . $customerPacket->packet->total_periode }}
+                </span>
             </div>
         </div>
     </div>

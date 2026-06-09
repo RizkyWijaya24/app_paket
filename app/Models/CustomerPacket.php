@@ -51,6 +51,14 @@ class CustomerPacket extends Model
     // =========================================================
 
     /**
+     * Cek apakah paket ini bertipe tabungan bebas/uang (setoran_wajib = 0).
+     */
+    public function getIsBebasAttribute(): bool
+    {
+        return $this->packet->setoran_wajib <= 0;
+    }
+
+    /**
      * Total yang sudah dibayarkan ke paket ini.
      */
     public function getTotalSetoranAttribute(): float
@@ -71,6 +79,7 @@ class CustomerPacket extends Model
      */
     public function getSisaSetoranAttribute(): float
     {
+        if ($this->is_bebas) return 0;
         return max(0, $this->target_total - $this->total_setoran);
     }
 
@@ -79,6 +88,7 @@ class CustomerPacket extends Model
      */
     public function getProgressPersenAttribute(): float
     {
+        if ($this->is_bebas) return 0;
         if ($this->target_total == 0) return 100;
         return min(100, round(($this->total_setoran / $this->target_total) * 100, 1));
     }
@@ -88,7 +98,7 @@ class CustomerPacket extends Model
      */
     public function getPeriodeTerbayarAttribute(): int
     {
-        if ($this->packet->setoran_wajib == 0) return 0;
+        if ($this->is_bebas || $this->packet->setoran_wajib == 0) return 0;
         return (int) floor($this->total_setoran / ($this->packet->setoran_wajib * $this->kuantitas));
     }
 }

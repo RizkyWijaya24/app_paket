@@ -53,24 +53,25 @@
 
     {{-- Daftar Paket & Riwayat Setoran --}}
     @foreach($customer->customerPackets as $cp)
-    @php
-        $totalSetoran = $cp->savingsLedgers->sum('jumlah_setoran');
-        $targetTotal  = $cp->packet->setoran_wajib * $cp->packet->total_periode * $cp->kuantitas;
-        $progress     = $targetTotal > 0 ? min(100, round(($totalSetoran / $targetTotal) * 100)) : 0;
-    @endphp
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         {{-- Header Paket --}}
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-lg">📦</div>
+                <div class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-lg">
+                    {{ $cp->is_bebas ? '💵' : '📦' }}
+                </div>
                 <div>
                     <p class="font-bold text-gray-900">{{ $cp->packet->nama_paket }}
                         @if($cp->kuantitas > 1) <span class="text-primary-500">×{{ $cp->kuantitas }}</span> @endif
                     </p>
                     <p class="text-xs text-gray-500">
-                        Rp {{ number_format($cp->packet->setoran_wajib, 0, ',', '.') }} / periode ·
-                        {{ $cp->packet->total_periode }} periode
+                        @if($cp->isBebas)
+                            Tabungan Uang · Setoran Bebas/Fleksibel
+                        @else
+                            Rp {{ number_format($cp->packet->setoran_wajib, 0, ',', '.') }} / periode ·
+                            {{ $cp->packet->total_periode }} periode
+                        @endif
                     </p>
                 </div>
             </div>
@@ -103,15 +104,24 @@
 
         {{-- Progress Bar --}}
         <div class="px-6 py-4 bg-gray-50">
-            <div class="flex justify-between text-sm mb-2">
-                <span class="text-gray-600">Total Terkumpul: <strong>Rp {{ number_format($totalSetoran, 0, ',', '.') }}</strong></span>
-                <span class="text-gray-600">Target: <strong>Rp {{ number_format($targetTotal, 0, ',', '.') }}</strong></span>
-                <span class="{{ $progress >= 100 ? 'text-emerald-600' : 'text-primary-600' }} font-bold">{{ $progress }}%</span>
-            </div>
-            <div class="bg-gray-200 rounded-full h-3">
-                <div class="h-3 rounded-full {{ $progress >= 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-primary-400 to-primary-600' }}"
-                     style="width: {{ $progress }}%"></div>
-            </div>
+            @if($cp->isBebas)
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-700">Total Terkumpul: <strong class="text-emerald-600 text-base">Rp {{ number_format($cp->total_setoran, 0, ',', '.') }}</strong></span>
+                    <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-3 py-1.5 rounded-xl border border-amber-200">
+                        💰 Tabungan Uang Bebas (Setoran Fleksibel)
+                    </span>
+                </div>
+            @else
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-600">Total Terkumpul: <strong>Rp {{ number_format($cp->total_setoran, 0, ',', '.') }}</strong></span>
+                    <span class="text-gray-600">Target: <strong>Rp {{ number_format($cp->target_total, 0, ',', '.') }}</strong></span>
+                    <span class="{{ $cp->progress_persen >= 100 ? 'text-emerald-600' : 'text-primary-600' }} font-bold">{{ $cp->progress_persen }}%</span>
+                </div>
+                <div class="bg-gray-200 rounded-full h-3">
+                    <div class="h-3 rounded-full {{ $cp->progress_persen >= 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-primary-400 to-primary-600' }}"
+                         style="width: {{ $cp->progress_persen }}%"></div>
+                </div>
+            @endif
         </div>
 
         {{-- 5 Setoran Terakhir --}}
