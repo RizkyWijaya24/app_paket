@@ -162,7 +162,7 @@
                                         name="setoran[{{ $cp->id }}][jumlah]"
                                         id="setoran_{{ $cp->id }}"
                                         min="0"
-                                        step="1000"
+                                        step="500"
                                         placeholder="{{ $isLunasReady ? 'Sudah lunas' : number_format($cp->packet->setoran_wajib, 0, '.', '') }}"
                                         {{ $isLunasReady ? 'disabled' : '' }}
                                         class="setoran-input flex-1 border border-gray-200 rounded-r-xl px-3 py-2.5 text-sm text-right

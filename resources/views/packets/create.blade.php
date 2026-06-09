@@ -13,7 +13,7 @@
             <div class="space-y-5">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Paket <span class="text-red-500">*</span></label>
-                    <input type="text" name="nama_paket" required
+                    <input type="text" name="nama_paket" required autofocus
                            value="{{ old('nama_paket', $packet->nama_paket ?? '') }}"
                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                            placeholder="Contoh: Paket A - Gold">
@@ -23,7 +23,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Setoran per Periode (Rp) <span class="text-red-500">*</span></label>
-                        <input type="number" name="setoran_wajib" required min="0" step="1000"
+                        <input type="number" name="setoran_wajib" required min="0" step="500"
                                value="{{ old('setoran_wajib', $packet->setoran_wajib ?? '') }}"
                                id="setoran_wajib"
                                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
