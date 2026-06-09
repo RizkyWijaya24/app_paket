@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Master Data: Reseller
+    Route::get('resellers/{reseller}/export', [ResellerController::class, 'export'])->name('resellers.export');
     Route::resource('resellers', ResellerController::class)->except(['show']);
 
     // Master Data: Paket

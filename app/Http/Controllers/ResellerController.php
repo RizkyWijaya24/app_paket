@@ -62,4 +62,27 @@ class ResellerController extends Controller
         return redirect()->route('resellers.index')
             ->with('success', 'Reseller berhasil dihapus.');
     }
+
+    /**
+     * Ekspor data tabungan reseller ke Excel (.xls)
+     */
+    public function export(Reseller $reseller)
+    {
+        $reseller->load([
+            'customers.customerPackets.packet',
+            'customers.customerPackets.savingsLedgers'
+        ]);
+
+        // Bersihkan nama reseller dari karakter non-alphanumeric untuk filename
+        $cleanResellerName = preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $reseller->nama_reseller));
+        $fileName = 'Laporan_Tabungan_' . $cleanResellerName . '_' . date('Ymd_His') . '.xls';
+
+        // Render view ke string HTML XLS
+        $html = view('resellers.export_excel', compact('reseller'))->render();
+
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
+            ->header('Cache-Control', 'max-age=0');
+    }
 }

@@ -34,6 +34,11 @@
                     <span class="font-semibold">{{ $selectedReseller->nama_reseller }}</span>
                     <span class="text-primary-600">— {{ $customerPackets->count() }} paket aktif</span>
                 </div>
+                <a href="{{ route('resellers.export', $selectedReseller) }}"
+                   download="Laporan_Tabungan_{{ preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $selectedReseller->nama_reseller)) }}_{{ date('Ymd_His') }}.xls"
+                   class="bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-800 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm">
+                    📊 Ekspor Excel
+                </a>
                 @endif
             </div>
         </form>

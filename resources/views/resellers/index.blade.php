@@ -56,6 +56,11 @@
                                class="text-xs bg-primary-50 text-primary-700 px-3 py-1.5 rounded-lg font-medium hover:bg-primary-100 transition-colors">
                                 Input Setoran
                             </a>
+                            <a href="{{ route('resellers.export', $reseller) }}"
+                               download="Laporan_Tabungan_{{ preg_replace('/[^A-Za-z0-9_]/', '', str_replace(' ', '_', $reseller->nama_reseller)) }}_{{ date('Ymd_His') }}.xls"
+                               class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg font-medium hover:bg-emerald-100 transition-colors inline-flex items-center gap-1">
+                                📊 Ekspor Excel
+                            </a>
                             <a href="{{ route('resellers.edit', $reseller) }}"
                                class="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-medium hover:bg-gray-200 transition-colors">
                                 Edit
